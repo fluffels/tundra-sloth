@@ -1,0 +1,2 @@
+easylogging++.cc filter=lfs diff=lfs merge=lfs -text
+easylogging++.h filter=lfs diff=lfs merge=lfs -text

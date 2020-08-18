@@ -271,3 +271,13 @@ void uploadMesh(
     uint32_t size,
     VulkanMesh& mesh
 );
+void uploadMesh(
+    VkDevice device,
+    VkPhysicalDeviceMemoryProperties& memories,
+    uint32_t queueFamily,
+    void* vertices,
+    uint32_t verticesSize,
+    void* indices,
+    uint32_t indicesSize,
+    VulkanMesh& mesh
+);

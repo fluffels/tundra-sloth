@@ -1,5 +1,8 @@
 #pragma warning(disable: 4267)
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+
 #include "MathLib.h"
 #include "Vulkan.h"
 
@@ -14,21 +17,46 @@ void renderLevel(
     VulkanPipeline pipeline;
     initVKPipeline(vk, "default", pipeline);
 
-    Vertex vertices[] = {
-        { 0, -1, 0 },
-        { 2, 1, 0 },
-        { -1, 1, 0 }
-    };
+    int heightMapWidth, heightMapDepth, n;
+    unsigned char *data = stbi_load("textures/noise.png", &heightMapWidth, &heightMapDepth, &n, 1);
 
-    VulkanMesh defaultMesh;
-    defaultMesh.vCount = 3;
+    VulkanMesh mesh;
+    mesh.vCount = heightMapWidth * heightMapDepth;
+    vector<Vertex> vertices;
+    int i = 0;
+    for (int z = 0; z < heightMapDepth; z++) {
+        for (int x = 0; x < heightMapWidth; x++) {
+            auto& v = vertices.emplace_back();
+            v.position.x = x;
+            v.position.z = z;
+            v.position.y = -data[i] / 255.f;
+            i++;
+        }
+    }
+    stbi_image_free(data);
+
+    vector<uint32_t> indices;
+    for (int z = 0; z < heightMapDepth - 1; z++) {
+        for (int x = 0; x < heightMapWidth - 1; x++) {
+            i = z * heightMapDepth + x;
+            indices.push_back(i);
+            indices.push_back(i+heightMapDepth);
+            indices.push_back(i+1);
+            indices.push_back(i+1);
+            indices.push_back(i+heightMapDepth);
+            indices.push_back(i+1+heightMapDepth);
+        }
+    }
+
     uploadMesh(
         vk.device,
         vk.memories,
         vk.queueFamily,
-        vertices,
-        3*sizeof(Vertex),
-        defaultMesh
+        vertices.data(),
+        vertices.size()*sizeof(Vertex),
+        indices.data(),
+        indices.size()*sizeof(uint32_t),
+        mesh
     );
 
     updateUniformBuffer(
@@ -82,13 +110,19 @@ void renderLevel(
         vkCmdBindVertexBuffers(
             cmd,
             0, 1,
-            &defaultMesh.vBuff.handle,
+            &mesh.vBuff.handle,
             offsets
         );
-        vkCmdDraw(
+        vkCmdBindIndexBuffer(
             cmd,
-            defaultMesh.vCount, 1,
-            0, 0
+            mesh.iBuff.handle,
+            0,
+            VK_INDEX_TYPE_UINT32
+        );
+        vkCmdDrawIndexed(
+            cmd,
+            indices.size(),
+            1, 0, 0, 0
         );
 
         vkCmdEndRenderPass(cmd);

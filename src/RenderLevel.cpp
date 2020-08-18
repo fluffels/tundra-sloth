@@ -23,13 +23,14 @@ void renderLevel(
     VulkanMesh mesh;
     mesh.vCount = heightMapWidth * heightMapDepth;
     vector<Vertex> vertices;
+    const float offset = -heightMapWidth / 2.f;
     int i = 0;
     for (int z = 0; z < heightMapDepth; z++) {
         for (int x = 0; x < heightMapWidth; x++) {
             auto& v = vertices.emplace_back();
-            v.position.x = x;
-            v.position.z = z;
-            v.position.y = -data[i] / 255.f;
+            v.position.x = offset + x;
+            v.position.z = offset + z;
+            v.position.y = 15.f * -data[i] / 255.f;
             i++;
         }
     }
@@ -40,10 +41,10 @@ void renderLevel(
         for (int x = 0; x < heightMapWidth - 1; x++) {
             i = z * heightMapDepth + x;
             indices.push_back(i);
-            indices.push_back(i+heightMapDepth);
-            indices.push_back(i+1);
             indices.push_back(i+1);
             indices.push_back(i+heightMapDepth);
+            indices.push_back(i+heightMapDepth);
+            indices.push_back(i+1);
             indices.push_back(i+1+heightMapDepth);
         }
     }

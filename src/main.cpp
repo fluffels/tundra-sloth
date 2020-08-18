@@ -150,7 +150,7 @@ WinMain(
     initVK(vk);
 
     Camera camera;
-    camera.setFOV(90);
+    camera.setFOV(45);
     camera.setAR(vk.swap.extent.width, vk.swap.extent.height);
     camera.nearz = 1.f;
     camera.farz = 1000000.f;

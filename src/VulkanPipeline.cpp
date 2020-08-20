@@ -264,6 +264,9 @@ void createPipeline(
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     assembly.topology = topology;
     assembly.primitiveRestartEnable = VK_FALSE;
+    if (topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP) {
+        assembly.primitiveRestartEnable = VK_TRUE;
+    }
 
     VkViewport viewport = {};
     viewport.height = (float)vk.swap.extent.height;

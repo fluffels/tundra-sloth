@@ -14,12 +14,19 @@ void renderLevel(
     Vulkan& vk,
     vector<VkCommandBuffer>& cmds
 ) {
-    VulkanPipeline pipeline;
+    VulkanPipeline meshPipeline;
     initVKPipeline(
         vk,
         "default",
         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-        pipeline
+        meshPipeline
+    );
+    VulkanPipeline wireframePipeline;
+    initVKPipeline(
+        vk,
+        "default",
+        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
+        wireframePipeline
     );
 
     int heightMapWidth, heightMapDepth, n;
@@ -47,16 +54,24 @@ void renderLevel(
     }
     stbi_image_free(data);
 
-    vector<uint32_t> indices;
+    vector<uint32_t> meshIndices;
+    vector<uint32_t> wireframeIndices;
     for (int z = 0; z < heightMapDepth - 1; z++) {
         for (int x = 0; x < heightMapWidth - 1; x++) {
             i = z * heightMapDepth + x;
-            indices.push_back(i);
-            indices.push_back(i+1);
-            indices.push_back(i+heightMapDepth);
-            indices.push_back(i+heightMapDepth);
-            indices.push_back(i+1);
-            indices.push_back(i+1+heightMapDepth);
+            meshIndices.push_back(i);
+            meshIndices.push_back(i+1);
+            meshIndices.push_back(i+heightMapDepth);
+            meshIndices.push_back(i+heightMapDepth);
+            meshIndices.push_back(i+1);
+            meshIndices.push_back(i+1+heightMapDepth);
+
+            wireframeIndices.push_back(i);
+            wireframeIndices.push_back(i+1);
+            wireframeIndices.push_back(i+heightMapDepth);
+            wireframeIndices.push_back(i+1);
+            wireframeIndices.push_back(i+1+heightMapDepth);
+            wireframeIndices.push_back(0xFFFFFFFF);
         }
     }
 
@@ -66,14 +81,30 @@ void renderLevel(
         vk.queueFamily,
         vertices.data(),
         vertices.size()*sizeof(Vertex),
-        indices.data(),
-        indices.size()*sizeof(uint32_t),
+        meshIndices.data(),
+        meshIndices.size()*sizeof(uint32_t),
         mesh
+    );
+
+    VulkanBuffer wireframeIndexBuffer;
+    uploadIndexBuffer(
+        vk.device,
+        vk.memories,
+        vk.queueFamily,
+        wireframeIndices.data(),
+        wireframeIndices.size()*sizeof(uint32_t),
+        wireframeIndexBuffer
     );
 
     updateUniformBuffer(
         vk.device,
-        pipeline.descriptorSet,
+        meshPipeline.descriptorSet,
+        0,
+        vk.mvp.handle
+    );
+    updateUniformBuffer(
+        vk.device,
+        wireframePipeline.descriptorSet,
         0,
         vk.mvp.handle
     );
@@ -105,15 +136,15 @@ void renderLevel(
         vkCmdBindPipeline(
             cmd,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
-            pipeline.handle
+            meshPipeline.handle
         );
         vkCmdBindDescriptorSets(
             cmd,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
-            pipeline.layout,
+            meshPipeline.layout,
             0,
             1,
-            &pipeline.descriptorSet,
+            &meshPipeline.descriptorSet,
             0,
             nullptr
         );
@@ -131,9 +162,26 @@ void renderLevel(
             0,
             VK_INDEX_TYPE_UINT32
         );
+        // vkCmdDrawIndexed(
+            // cmd,
+            // indices.size(),
+            // 1, 0, 0, 0
+        // );
+
+        vkCmdBindPipeline(
+            cmd,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            wireframePipeline.handle
+        );
+        vkCmdBindIndexBuffer(
+            cmd,
+            wireframeIndexBuffer.handle,
+            0,
+            VK_INDEX_TYPE_UINT32
+        );
         vkCmdDrawIndexed(
             cmd,
-            indices.size(),
+            wireframeIndices.size(),
             1, 0, 0, 0
         );
 

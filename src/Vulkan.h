@@ -160,6 +160,14 @@ void createTexelBuffer(
     uint32_t size,
     VulkanBuffer& buffer
 );
+void uploadIndexBuffer(
+    VkDevice device,
+    VkPhysicalDeviceMemoryProperties& memories,
+    uint32_t queueFamily,
+    void* data,
+    uint32_t size,
+    VulkanBuffer& buffer
+);
 void uploadTexelBuffer(
     VkDevice device,
     VkPhysicalDeviceMemoryProperties& memories,

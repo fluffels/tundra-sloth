@@ -173,6 +173,15 @@ void renderLevel(
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             wireframePipeline.handle
         );
+        vec3 color(0, 0, 1);
+        vkCmdPushConstants(
+            cmd,
+            wireframePipeline.layout,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(color),
+            &color
+        );
         vkCmdBindIndexBuffer(
             cmd,
             wireframeIndexBuffer.handle,

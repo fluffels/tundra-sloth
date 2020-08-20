@@ -159,11 +159,23 @@ void createShaderModule(Vulkan& vk, const string& path, VulkanShader& shader) {
     createShaderModule(vk, code, shader);
 }
 
-void createPipelineLayout(Vulkan& vk, VulkanPipeline& pipeline) {
+void createPipelineLayout(Vulkan& vk, vector<VulkanShader>& shaders, VulkanPipeline& pipeline) {
+    vector<VkPushConstantRange> pushConstantRanges;
+    for (auto& shader: shaders) {
+        for (int i = 0; i < shader.reflect.push_constant_block_count; i++) {
+            auto& block = shader.reflect.push_constant_blocks[i];
+            auto& range = pushConstantRanges.emplace_back();
+            range.offset = block.offset;
+            range.size = block.padded_size;
+        }
+    }
+
     VkPipelineLayoutCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     createInfo.setLayoutCount = 1;
     createInfo.pSetLayouts = &pipeline.descriptorLayout;
+    createInfo.pushConstantRangeCount = pushConstantRanges.size();
+    createInfo.pPushConstantRanges = pushConstantRanges.data();
     checkSuccess(vkCreatePipelineLayout(
         vk.device,
         &createInfo,
@@ -391,7 +403,7 @@ void initVKPipeline(
     createDescriptorLayout(vk, shaders, pipeline);
     createDescriptorPool(vk, shaders, pipeline);
     allocateDescriptorSet(vk, pipeline);
-    createPipelineLayout(vk, pipeline);
+    createPipelineLayout(vk, shaders, pipeline);
     createPipeline(
         vk, shaders[0], shaders[1],
         topology,

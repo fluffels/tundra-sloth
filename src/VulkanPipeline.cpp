@@ -221,6 +221,7 @@ void createPipeline(
     Vulkan& vk,
     VulkanShader& vert,
     VulkanShader& frag,
+    VkPrimitiveTopology topology,
     VulkanPipeline& pipeline
 ) {
     vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -261,7 +262,7 @@ void createPipeline(
     VkPipelineInputAssemblyStateCreateInfo assembly = {};
     assembly.sType =
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    assembly.topology = topology;
     assembly.primitiveRestartEnable = VK_FALSE;
 
     VkViewport viewport = {};
@@ -362,7 +363,12 @@ void createPipeline(
     ));
 }
 
-void initVKPipeline(Vulkan& vk, char* name, VulkanPipeline& pipeline) {
+void initVKPipeline(
+    Vulkan& vk,
+    char* name,
+    VkPrimitiveTopology topology,
+    VulkanPipeline& pipeline
+) {
     pipeline = {};
 
     vector<VulkanShader> shaders(2);
@@ -383,5 +389,9 @@ void initVKPipeline(Vulkan& vk, char* name, VulkanPipeline& pipeline) {
     createDescriptorPool(vk, shaders, pipeline);
     allocateDescriptorSet(vk, pipeline);
     createPipelineLayout(vk, pipeline);
-    createPipeline(vk, shaders[0], shaders[1], pipeline);
+    createPipeline(
+        vk, shaders[0], shaders[1],
+        topology,
+        pipeline
+    );
 }

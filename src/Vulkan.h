@@ -239,6 +239,7 @@ void destroyVulkanSampler(
 void initVKPipeline(
     Vulkan& vk,
     char* name,
+    VkPrimitiveTopology topology,
     VulkanPipeline&
 );
 

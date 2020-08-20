@@ -15,10 +15,21 @@ void renderLevel(
     vector<VkCommandBuffer>& cmds
 ) {
     VulkanPipeline pipeline;
-    initVKPipeline(vk, "default", pipeline);
+    initVKPipeline(
+        vk,
+        "default",
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        pipeline
+    );
 
     int heightMapWidth, heightMapDepth, n;
-    unsigned char *data = stbi_load("textures/noise.png", &heightMapWidth, &heightMapDepth, &n, 1);
+    unsigned char *data = stbi_load(
+        "textures/noise.png",
+        &heightMapWidth,
+        &heightMapDepth,
+        &n,
+        1
+    );
 
     VulkanMesh mesh;
     mesh.vCount = heightMapWidth * heightMapDepth;

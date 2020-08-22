@@ -162,25 +162,34 @@ void renderLevel(
             0,
             VK_INDEX_TYPE_UINT32
         );
-        // vkCmdDrawIndexed(
-            // cmd,
-            // indices.size(),
-            // 1, 0, 0, 0
-        // );
+        vec3 white(1, 1, 1);
+        vkCmdPushConstants(
+            cmd,
+            meshPipeline.layout,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(white),
+            &white
+        );
+        vkCmdDrawIndexed(
+            cmd,
+            meshIndices.size(),
+            1, 0, 0, 0
+        );
 
         vkCmdBindPipeline(
             cmd,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             wireframePipeline.handle
         );
-        vec3 color(0, 0, 1);
+        vec3 blue(0, 0, 1);
         vkCmdPushConstants(
             cmd,
             wireframePipeline.layout,
             VK_SHADER_STAGE_VERTEX_BIT,
             0,
-            sizeof(color),
-            &color
+            sizeof(blue),
+            &blue
         );
         vkCmdBindIndexBuffer(
             cmd,

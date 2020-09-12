@@ -38,6 +38,8 @@ add_executable (
     src/MathLib.cpp
     src/Mouse.cpp
     src/Present.cpp
+    src/RenderLevel.cpp
+    src/RenderText.cpp
     src/Vulkan.cpp
     src/Win32.cpp
 )

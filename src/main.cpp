@@ -15,8 +15,8 @@ INITIALIZE_EASYLOGGINGPP
 #include "Vulkan.h"
 #include "Win32.h"
 
-#include "RenderLevel.cpp"
-#include "RenderText.cpp"
+#include "RenderLevel.h"
+#include "RenderText.h"
 
 using std::exception;
 using std::setprecision;

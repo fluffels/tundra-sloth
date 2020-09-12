@@ -4,11 +4,16 @@
 #include "stb/stb_image.h"
 
 #include "MathLib.h"
-#include "Vulkan.h"
+#include "RenderLevel.h"
 
 struct Vertex {
     Vec3 position;
 };
+
+static int heightMapWidth;
+static int heightMapDepth;
+static VulkanMesh mesh;
+static vector<Vertex> vertices;
 
 void renderLevel(
     Vulkan& vk,
@@ -29,7 +34,7 @@ void renderLevel(
         wireframePipeline
     );
 
-    int heightMapWidth, heightMapDepth, n;
+    int n;
     unsigned char *data = stbi_load(
         "textures/noise.png",
         &heightMapWidth,
@@ -38,9 +43,7 @@ void renderLevel(
         1
     );
 
-    VulkanMesh mesh;
     mesh.vCount = heightMapWidth * heightMapDepth;
-    vector<Vertex> vertices;
     const float offset = -heightMapWidth / 2.f;
     int i = 0;
     for (int z = 0; z < heightMapDepth; z++) {
@@ -162,7 +165,7 @@ void renderLevel(
             0,
             VK_INDEX_TYPE_UINT32
         );
-        vec3 white(1, 1, 1);
+        Vec3 white = {1, 1, 1};
         vkCmdPushConstants(
             cmd,
             meshPipeline.layout,
@@ -182,7 +185,7 @@ void renderLevel(
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             wireframePipeline.handle
         );
-        vec3 blue(0, 0, 1);
+        Vec3 blue = {0, 0, 1};
         vkCmdPushConstants(
             cmd,
             wireframePipeline.layout,

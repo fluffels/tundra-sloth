@@ -1,7 +1,8 @@
 #pragma warning(disable: 4267)
 
+#include "RenderText.h"
+
 #include "stb/stb_easy_font.h"
-#include "Vulkan.h"
 
 const float SIZE_X = 0;
 const float SIZE_Y = 0;

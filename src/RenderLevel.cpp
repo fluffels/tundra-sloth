@@ -23,14 +23,12 @@ void renderLevel(
     initVKPipeline(
         vk,
         "default",
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
         meshPipeline
     );
     VulkanPipeline wireframePipeline;
     initVKPipeline(
         vk,
         "default",
-        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
         wireframePipeline
     );
 

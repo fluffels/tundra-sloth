@@ -20,6 +20,7 @@ add_custom_target(Shaders ALL DEPENDS ${SPIRV_FILES})
 
 include_directories (${CMAKE_HOME_DIRECTORY}/src)
 include_directories (${CMAKE_HOME_DIRECTORY}/lib/glm)
+include_directories (${CMAKE_HOME_DIRECTORY}/lib/jcwk)
 include_directories (${CMAKE_HOME_DIRECTORY}/lib)
 include_directories(${glm_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
@@ -27,6 +28,8 @@ add_executable (
     main
     WIN32
     Shaders
+    lib/jcwk/MathLib.cpp
+    lib/jcwk/Vulkan.cpp
     lib/SPIRV-Reflect/spirv_reflect.c
     lib/easylogging++.cc
     src/main.cpp
@@ -35,12 +38,10 @@ add_executable (
     src/Camera.cpp
     src/DirectInput.cpp
     src/Controller.cpp
-    src/MathLib.cpp
     src/Mouse.cpp
     src/Present.cpp
     src/RenderLevel.cpp
     src/RenderText.cpp
-    src/Vulkan.cpp
     src/Win32.cpp
 )
 target_link_libraries(

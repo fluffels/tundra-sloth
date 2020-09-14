@@ -84,7 +84,6 @@ recordTextCommandBuffers(Vulkan& vk, vector<VkCommandBuffer>& cmds, char* text) 
     initVKPipeline(
         vk,
         "text",
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
         pipeline
     );
 

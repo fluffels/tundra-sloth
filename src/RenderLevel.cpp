@@ -26,7 +26,7 @@ void renderLevel(
         meshPipeline
     );
     VulkanPipeline wireframePipeline;
-    initVKPipeline(
+    initVKPipelineLines(
         vk,
         "default",
         wireframePipeline
